@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import mammoth from 'mammoth'
-import { marked } from 'marked'
 import { useVueOffice } from './useVueOffice'
+import { createMarkdownRenderer } from '@/utils/markdown'
 
 /*
 useDocumentPreview输出函数一览：
@@ -16,6 +16,8 @@ closePptxPreview 关闭PPTX预览框架
 handleUnsupportedFormat 处理不支持的文件格式
 cleanup 清理预览资源
 */
+
+const markdownRenderer = createMarkdownRenderer()
 
 export function useDocumentPreview() {
   const loading = ref(false)
@@ -137,7 +139,7 @@ export function useDocumentPreview() {
   const previewMarkdown = async (blob) => {
     try {
       const text = await blob.text()
-      const htmlContent = marked(text)
+      const htmlContent = markdownRenderer.parse(text, { async: false })
       previewContent.value = `
         <div class="markdown-preview-container">
           <div class="markdown-content">

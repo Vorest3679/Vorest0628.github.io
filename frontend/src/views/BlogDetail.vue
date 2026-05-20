@@ -209,14 +209,14 @@ import { useRoute } from 'vue-router'
 import { blogApi } from '@/api/blog'
 import { commentApi } from '@/api/comment'
 import { format } from 'date-fns'
-import { marked } from 'marked'
+import { Renderer } from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 import DOMPurify from 'dompurify'
 import { useAuthStore } from '@/store/modules/auth'
 import CommentNode from '@/components/CommentNode.vue'
 import { resolveStoredAssetUrl } from '@/utils/assetUrl'
-import { normalizeMarkdownImageDestinations } from '@/utils/markdown'
+import { createMarkdownRenderer, normalizeMarkdownImageDestinations } from '@/utils/markdown'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -268,7 +268,7 @@ const resolveBlogAssetUrl = (href = '') => {
 }
 
 // 配置marked renderer
-const renderer = new marked.Renderer()
+const renderer = new Renderer()
 renderer.image = (href = '', title, text) => {
   // 修复 marked 新版本参数传递问题
   if (typeof href === 'object' && href !== null) {
@@ -339,11 +339,11 @@ renderer.code = (codeToken, infostring = '') => {
     </div>
   `
 }
-marked.setOptions({ renderer })
+const markdownRenderer = createMarkdownRenderer({ renderer })
 
 const renderedContent = computed(() => {
   if (!article.value?.content) return ''
-  const html = marked(normalizeMarkdownImageDestinations(article.value.content))
+  const html = markdownRenderer.parse(normalizeMarkdownImageDestinations(article.value.content), { async: false })
   return DOMPurify.sanitize(html)
 });
 

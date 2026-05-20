@@ -1,3 +1,6 @@
+import { Marked, type MarkedOptions } from 'marked'
+import markedKatex from 'marked-katex-extension'
+
 const IMAGE_FILE_EXTENSION_REGEX = /\.(?:apng|avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i
 
 const wrapMarkdownDestination = (destination = ''): string => {
@@ -45,4 +48,20 @@ export const normalizeMarkdownImageDestinations = (markdown = ''): string => {
 
     return `![${altText}](${wrapMarkdownDestination(destination)}${titleSuffix})`
   })
+}
+
+export const createMarkdownRenderer = (options: MarkedOptions = {}): Marked => {
+  const renderer = new Marked()
+  renderer.setOptions({
+    gfm: true,
+    breaks: false,
+    ...options
+  })
+  renderer.use(markedKatex({
+    throwOnError: false,
+    nonStandard: true,
+    strict: false
+  }))
+
+  return renderer
 }

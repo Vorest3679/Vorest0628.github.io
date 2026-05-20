@@ -32,3 +32,10 @@ textarea,
 select {
   font: inherit;
 }
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0;
+  max-width: 100%;
+}

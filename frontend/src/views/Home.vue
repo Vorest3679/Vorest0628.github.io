@@ -3,7 +3,7 @@
     <section class="hero-section">
       <div class="hero-panel hero-copy">
         <p class="hero-kicker">
-          Summer ACG Vibe
+          Summer
         </p>
         <h1 class="hero-title">
           Blog
