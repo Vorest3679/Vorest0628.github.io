@@ -1,17 +1,53 @@
 <template>
   <div class="home">
     <section class="hero-section">
+      <!-- Decorative Sun -->
+      <div class="hero-sun-decoration animate-shimmer">
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <g class="animate-pulse-glow">
+            <line x1="36" y1="36" x2="36" y2="4" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="52" y2="8.29" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="63.71" y2="20" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="68" y2="36" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="63.71" y2="52" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="52" y2="63.71" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="36" y2="68" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="20" y2="63.71" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="8.29" y2="52" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="4" y2="36" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="8.29" y2="20" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="36" y1="36" x2="20" y2="8.29" stroke="#FFCC66" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          </g>
+          <circle cx="36" cy="36" r="16" fill="#FFCC66" fill-opacity="0.9"/>
+          <circle cx="36" cy="36" r="11" fill="#FFEE88" fill-opacity="0.85"/>
+        </svg>
+      </div>
+
+      <!-- Floating Cloud -->
+      <div class="hero-cloud-decoration animate-float-delayed">
+        <svg width="80" height="42" viewBox="0 0 120 60" fill="none">
+          <ellipse cx="60" cy="35" rx="55" ry="22" fill="white" fill-opacity="0.7"/>
+          <ellipse cx="40" cy="28" rx="30" ry="20" fill="white" fill-opacity="0.8"/>
+          <ellipse cx="80" cy="30" rx="28" ry="18" fill="white" fill-opacity="0.75"/>
+        </svg>
+      </div>
+
       <div class="hero-panel hero-copy">
-        <p class="hero-kicker">
+        <p class="hero-kicker animate-fadeInUp">
           Summer
         </p>
-        <h1 class="hero-title">
+        <h1 class="hero-title animate-fadeInUp">
           Blog
+          <span class="hero-sparkle animate-sparkle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" fill="#FFCC66" fill-opacity="0.9"/>
+            </svg>
+          </span>
         </h1>
-        <p class="hero-desc">
+        <p class="hero-desc animate-fadeInUp">
           用清爽的天空色记录开发、灵感与日常。
         </p>
-        <div class="hero-actions">
+        <div class="hero-actions animate-fadeInUp">
           <button
             class="hero-btn primary"
             @click="router.push('/blog')"
@@ -27,7 +63,7 @@
         </div>
       </div>
 
-      <div class="hero-panel hero-info">
+      <div class="hero-panel hero-info animate-fadeInUp">
         <p class="info-date">
           {{ currentDate }}
         </p>
@@ -67,15 +103,12 @@
         <span class="cloud c9" />
       </div>
       <div class="bridge-shimmer" />
-      <p class="bridge-label">
-        Cloud Motion Zone · 动态云朵衔接预留区
-      </p>
     </section>
 
     <section class="home-main">
       <section class="block">
         <div class="section-head">
-          <h2>置顶内容</h2>
+          <h2><span style="color: #FFAA33;">☀</span> 置顶内容</h2>
           <button
             class="link-btn"
             @click="navigateToReadme"
@@ -151,7 +184,7 @@
 
       <section class="block">
         <div class="section-head">
-          <h2>最近博客</h2>
+          <h2><span style="color: #FFAA33;">★</span> 最近博客</h2>
           <button
             class="link-btn"
             @click="router.push('/blog')"
@@ -493,15 +526,7 @@ onUnmounted(() => {
   position: relative;
   min-height: 100%;
   color: var(--summer-text-main);
-  background:
-    linear-gradient(
-      180deg,
-      rgba(67, 174, 250, 0.92) 0%,
-      rgba(139, 230, 255, 0.86) 36%,
-      rgba(222, 248, 255, 0.7) 50%,
-      rgba(134, 234, 218, 0.78) 64%,
-      rgba(149, 239, 221, 0.86) 100%
-    );
+  background: transparent;
   overflow: hidden;
 }
 
@@ -515,6 +540,31 @@ onUnmounted(() => {
     linear-gradient(120deg, rgba(255, 255, 255, 0.14), transparent 35%);
   pointer-events: none;
 }
+
+/* Decorative Elements */
+.hero-sun-decoration {
+  position: absolute;
+  top: 1.2rem;
+  right: 18%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-cloud-decoration {
+  position: absolute;
+  top: 2rem;
+  right: 6%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Animation delays for hero elements */
+.hero-kicker.animate-fadeInUp { animation-delay: 0.1s; }
+.hero-title.animate-fadeInUp { animation-delay: 0.2s; }
+.hero-desc.animate-fadeInUp { animation-delay: 0.3s; }
+.hero-actions.animate-fadeInUp { animation-delay: 0.4s; }
+.hero-info.animate-fadeInUp { animation-delay: 0.3s; }
 
 .hero-section,
 .home-main {
@@ -531,10 +581,11 @@ onUnmounted(() => {
 
 .hero-panel {
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(235, 248, 255, 0.62);
-  box-shadow: 0 18px 45px rgba(40, 101, 150, 0.16);
-  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(2, 119, 189, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .hero-copy {
@@ -544,10 +595,11 @@ onUnmounted(() => {
 .hero-kicker {
   margin: 0;
   font-size: 0.88rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: #377cbf;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 700;
+  text-shadow: 0 1px 8px rgba(2, 136, 209, 0.5);
 }
 
 .hero-title {
@@ -555,15 +607,23 @@ onUnmounted(() => {
   font-size: clamp(3.1rem, 7vw, 5.4rem);
   line-height: 0.9;
   font-family: var(--summer-font-display);
-  color: #3193ea;
-  text-shadow: 0 12px 24px rgba(41, 131, 210, 0.22);
+  color: #FFFFFF;
+  text-shadow: 0 2px 16px rgba(2, 136, 209, 0.6), 0 4px 30px rgba(2, 136, 209, 0.3), 0 0 60px rgba(79, 195, 247, 0.2);
+  position: relative;
+}
+
+.hero-sparkle {
+  position: absolute;
+  top: -0.5rem;
+  left: clamp(120px, 30vw, 200px);
 }
 
 .hero-desc {
   margin: 0;
   max-width: 34rem;
-  color: var(--summer-text-subtle);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.02rem;
+  text-shadow: 0 1px 8px rgba(2, 136, 209, 0.5);
 }
 
 .hero-actions {
@@ -587,15 +647,26 @@ onUnmounted(() => {
 }
 
 .hero-btn.primary {
-  background: linear-gradient(135deg, #2f8ce2, #57beff);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: #fff;
-  box-shadow: 0 10px 24px rgba(46, 144, 225, 0.34);
+  box-shadow: 0 4px 16px rgba(45, 180, 255, 0.4);
+}
+
+.hero-btn.primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+  box-shadow: 0 6px 24px rgba(45, 180, 255, 0.55);
 }
 
 .hero-btn.ghost {
-  background: rgba(255, 255, 255, 0.82);
-  color: #2f78c6;
-  border: 1px solid rgba(76, 170, 236, 0.5);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--summer-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 12px rgba(2, 136, 209, 0.1);
+}
+
+.hero-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(2, 136, 209, 0.2);
 }
 
 .hero-info {
@@ -609,20 +680,20 @@ onUnmounted(() => {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 800;
-  color: #3688de;
+  color: var(--summer-text-main);
 }
 
 .info-time {
   margin: 0;
   font-size: 2.1rem;
   font-weight: 800;
-  color: #26649c;
-  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  color: var(--summer-text-main);
+  font-family: var(--summer-font-display), 'JetBrains Mono', 'Consolas', monospace;
 }
 
 .info-location {
   margin: 0;
-  color: #5a7f9f;
+  color: var(--summer-text-secondary);
   font-style: italic;
   font-size: 1.2rem;
 }
@@ -630,19 +701,19 @@ onUnmounted(() => {
 .info-weather {
   margin: 0;
   font-size: 2rem;
-  color: #ff8ba3;
+  color: var(--color-weather-temp);
   font-family: var(--summer-font-display);
 }
 
 .info-tip {
   margin: 0.4rem 0 0;
-  color: #4e7d97;
+  color: var(--summer-text-secondary);
   font-size: 0.95rem;
 }
 
 .info-meta {
   margin: 0;
-  color: #6188a3;
+  color: var(--summer-text-muted);
   font-size: 0.88rem;
   line-height: 1.45;
 }
@@ -650,14 +721,15 @@ onUnmounted(() => {
 .cloud-bridge {
   position: relative;
   height: 140px;
-  margin: 0 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.75);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   background: linear-gradient(
     180deg,
-    rgba(240, 251, 255, 0.9) 0%,
-    rgba(237, 251, 255, 0.58) 45%,
-    rgba(172, 239, 228, 0.52) 100%
+    rgba(240, 251, 255, 0.55) 0%,
+    rgba(237, 251, 255, 0.25) 45%,
+    rgba(172, 239, 228, 0.15) 100%
   );
   overflow: hidden;
 }
@@ -667,20 +739,6 @@ onUnmounted(() => {
   inset: 0;
   background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.24) 50%, transparent 65%);
   animation: bridge-shimmer 8.6s linear infinite;
-}
-
-.bridge-label {
-  position: absolute;
-  left: 50%;
-  bottom: 0.85rem;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(46, 117, 165, 0.62);
-  white-space: nowrap;
-  z-index: 3;
 }
 
 .cloud-track {
@@ -841,17 +899,17 @@ onUnmounted(() => {
 }
 
 .home-main {
-  padding: 1.2rem 2rem 2.2rem;
+  padding: 1.2rem 0 2.2rem;
   display: grid;
   gap: 1.5rem;
 }
 
 .block {
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.68);
-  background: rgba(247, 252, 255, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(10px);
-  box-shadow: 0 14px 34px rgba(52, 119, 160, 0.14);
+  box-shadow: 0 4px 24px rgba(2, 136, 209, 0.15);
   padding: 1.3rem;
 }
 
@@ -895,9 +953,9 @@ onUnmounted(() => {
 .pin-card,
 .recent-item {
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 8px 20px rgba(51, 112, 151, 0.11);
+  box-shadow: 0 4px 24px rgba(2, 136, 209, 0.15);
   cursor: pointer;
   transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
@@ -906,7 +964,7 @@ onUnmounted(() => {
 .recent-item:hover {
   transform: translateY(-3px);
   border-color: rgba(79, 174, 236, 0.8);
-  box-shadow: 0 14px 28px rgba(52, 118, 170, 0.18);
+  box-shadow: 0 16px 48px rgba(2, 136, 209, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .pin-card {
@@ -973,9 +1031,14 @@ onUnmounted(() => {
   border-radius: 999px;
   padding: 0.28rem 0.72rem;
   font-size: 0.75rem;
-  color: #3979a8;
-  background: #ebf6ff;
+  color: var(--color-tag-text);
+  background: var(--color-tag-bg);
   border: 1px solid rgba(112, 189, 243, 0.4);
+  transition: all 0.2s ease;
+}
+
+.pill:hover {
+  background: rgba(45, 180, 255, 0.35);
 }
 
 .recent-list {
@@ -1062,11 +1125,6 @@ onUnmounted(() => {
   .section-head {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .bridge-label {
-    font-size: 0.66rem;
-    letter-spacing: 0.08em;
   }
 
   .cloud-track {

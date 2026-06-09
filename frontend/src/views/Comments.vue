@@ -280,7 +280,11 @@ onMounted(async () => {
 
 <style scoped>
 .comments {
-  padding: 30px;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 24px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 24px rgba(2, 136, 209, 0.15);
   min-height: 600px;
 }
 

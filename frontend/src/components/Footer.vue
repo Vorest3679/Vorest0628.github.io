@@ -45,10 +45,11 @@ const currentYear = computed(() => new Date().getFullYear())
 .main-footer {
   grid-area: footer;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  background: rgba(247, 252, 255, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 14px 34px rgba(40, 108, 150, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 14px 34px rgba(40, 108, 150, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   padding: 1rem;
 }
 

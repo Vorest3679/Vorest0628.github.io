@@ -18,6 +18,10 @@
     class="app"
     :class="{ 'app-loaded': !isInitialLoading }"
   >
+    <!-- Anime Summer Sky Background Layers -->
+    <div class="page-bg" />
+    <div class="page-bg-overlay" />
+    <AnimatedDecorations v-if="showParticles" />
     <ParticlesBackground v-if="showParticles" />
 
     <div class="container">
@@ -82,6 +86,7 @@ import LoginModal from './LoginModal.vue'
 import backgroundImageUrl from '../assets/image/background-bottom.jpg?url'
 
 const ParticlesBackground = defineAsyncComponent(() => import('./ParticlesBackground.vue'))
+const AnimatedDecorations = defineAsyncComponent(() => import('./AnimatedDecorations.vue'))
 
 const showParticles = ref(false)
 const showLoginModal = ref(false)
@@ -153,17 +158,21 @@ onUnmounted(() => {
   grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   padding: 10px 12px 24px;
+  max-width: 1460px;
+  margin: 0 auto;
 }
 
 .main-content {
   grid-area: main;
   min-height: 420px;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  background: rgba(247, 252, 255, 0.74);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 16px 42px rgba(35, 103, 150, 0.16);
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .loading {
@@ -288,10 +297,26 @@ onUnmounted(() => {
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=ZCOOL+KuaiLe&display=swap');
 
 :root {
-  --summer-font-main: 'M PLUS Rounded 1c', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --summer-font-display: 'ZCOOL KuaiLe', 'M PLUS Rounded 1c', 'Noto Sans SC', cursive;
-  --summer-text-main: #245d88;
-  --summer-text-subtle: #4e7d9f;
+  --summer-font-main: 'Nunito', 'M PLUS Rounded 1c', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --summer-font-display: 'Fredoka', 'ZCOOL KuaiLe', 'M PLUS Rounded 1c', 'Noto Sans SC', cursive;
+  --summer-text-main: #1A3A5C;
+  --summer-text-subtle: #3D6B8F;
+  --summer-text-muted: #6B9BBF;
+
+  /* ===== Anime Summer Sky Theme ===== */
+  --color-primary: #2DB4FF;
+  --color-primary-dark: #0099EE;
+  --color-primary-light: #5CC8FF;
+  --color-secondary: #FFAA33;
+  --color-secondary-light: #FFCC66;
+  --color-bg-start: #4FC3F7;
+  --color-bg-end: #0288D1;
+  --color-surface: rgba(255, 255, 255, 0.55);
+  --color-surface-solid: rgba(255, 255, 255, 0.88);
+  --color-weather-temp: #FF6B35;
+  --color-success: #00C853;
+  --color-tag-bg: rgba(45, 180, 255, 0.18);
+  --color-tag-text: #0088CC;
 }
 
 * {
@@ -302,30 +327,8 @@ html {
   min-height: 100vh;
   font-family: var(--summer-font-main);
   font-size: 16px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(60, 173, 250, 0.98) 0%,
-      rgba(138, 229, 255, 0.92) 34%,
-      rgba(212, 247, 255, 0.8) 52%,
-      rgba(122, 233, 216, 0.84) 66%,
-      rgba(152, 239, 224, 0.9) 100%
-    );
-  background-attachment: fixed;
-}
-
-html.with-background-image {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(64, 176, 251, 0.92) 0%,
-      rgba(142, 232, 255, 0.9) 34%,
-      rgba(209, 248, 255, 0.72) 54%,
-      rgba(127, 233, 216, 0.82) 72%,
-      rgba(157, 240, 225, 0.86) 100%
-    ),
-    var(--summer-bg-image, none) center bottom / cover no-repeat;
-  background-attachment: fixed;
+  scroll-behavior: smooth;
+  background: transparent;
 }
 
 body {
@@ -333,5 +336,145 @@ body {
   background: transparent;
   color: var(--summer-text-main);
   line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== Anime Summer Sky Background Layers ===== */
+.page-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  background-image: url('/assets/scenery-bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+}
+
+.page-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    rgba(79, 195, 247, 0.1) 0%,
+    rgba(3, 155, 229, 0.15) 50%,
+    rgba(2, 136, 209, 0.25) 100%
+  );
+}
+
+/* ===== Animations ===== */
+@keyframes float {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(25px) translateY(-12px); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(-15px) translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes fly {
+  0% { transform: translateX(-100%) translateY(0); }
+  25% { transform: translateX(25vw) translateY(-20px); }
+  50% { transform: translateX(50vw) translateY(0); }
+  75% { transform: translateX(75vw) translateY(20px); }
+  100% { transform: translateX(110vw) translateY(0); }
+}
+
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg) translateX(100px); opacity: 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 170, 51, 0.5)); }
+  50% { filter: drop-shadow(0 0 24px rgba(255, 204, 102, 0.8)); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.5; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}
+
+@keyframes cloudDrift1 {
+  0% { transform: translateX(-200px); }
+  100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+@keyframes cloudDrift2 {
+  0% { transform: translateX(-250px); }
+  100% { transform: translateX(calc(100vw + 250px)); }
+}
+
+@keyframes cloudDrift3 {
+  0% { transform: translateX(-180px); }
+  100% { transform: translateX(calc(100vw + 180px)); }
+}
+
+@keyframes cloudDriftSlow {
+  0% { transform: translateX(-300px); }
+  100% { transform: translateX(calc(100vw + 300px)); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animation Classes */
+.animate-float { animation: float 18s ease-in-out infinite; }
+.animate-float-delayed { animation: floatSlow 22s ease-in-out infinite; animation-delay: -5s; }
+.animate-shimmer { animation: shimmer 3s ease-in-out infinite; }
+.animate-fly { animation: fly 20s linear infinite; }
+.animate-fall { animation: fall 10s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-sparkle { animation: sparkle 2.5s ease-in-out infinite; }
+.animate-cloud-1 { animation: cloudDrift1 45s linear infinite; }
+.animate-cloud-2 { animation: cloudDrift2 60s linear infinite; animation-delay: -15s; }
+.animate-cloud-3 { animation: cloudDrift3 35s linear infinite; animation-delay: -25s; }
+.animate-cloud-slow { animation: cloudDriftSlow 80s linear infinite; animation-delay: -40s; }
+.animate-fadeInUp { animation: fadeInUp 0.6s ease-out both; }
+
+/* ===== Scrollbar - summer blue theme ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(45, 180, 255, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 180, 255, 0.7);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(45, 180, 255, 0.3);
+  color: #1A3A5C;
+}
+
+@media (max-width: 768px) {
+  .page-bg {
+    background-attachment: scroll;
+  }
 }
 </style>

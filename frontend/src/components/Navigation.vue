@@ -375,14 +375,15 @@ onUnmounted(() => {
   left: 50%;
   transform: translateX(-50%);
   z-index: 120;
-  width: min(1480px, calc(100% - 20px));
+  width: min(1480px, calc(100vw - 20px));
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.84), rgba(223, 247, 255, 0.76)),
-    radial-gradient(circle at right top, rgba(126, 210, 255, 0.25), transparent 60%);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 12px 38px rgba(32, 94, 137, 0.18);
+    linear-gradient(120deg, rgba(255, 255, 255, 0.65), rgba(223, 247, 255, 0.55)),
+    radial-gradient(circle at right top, rgba(126, 210, 255, 0.2), transparent 60%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 38px rgba(32, 94, 137, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   padding: 0.78rem 1rem;
   display: grid;
   gap: 0.78rem;
