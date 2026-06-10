@@ -45,7 +45,7 @@
           </span>
         </h1>
         <p class="hero-desc animate-fadeInUp">
-          用清爽的天空色记录开发、灵感与日常。
+          在一片夏日，记录开发、灵感与日常。
         </p>
         <div class="hero-actions animate-fadeInUp">
           <button
@@ -720,30 +720,21 @@ onUnmounted(() => {
 
 .cloud-bridge {
   position: relative;
-  height: 140px;
+  height: 150px;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  background: linear-gradient(
-    180deg,
-    rgba(240, 251, 255, 0.55) 0%,
-    rgba(237, 251, 255, 0.25) 45%,
-    rgba(172, 239, 228, 0.15) 100%
-  );
   overflow: hidden;
 }
 
 .bridge-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.24) 50%, transparent 65%);
   animation: bridge-shimmer 8.6s linear infinite;
 }
 
 .cloud-track {
   position: absolute;
-  top: 0;
+  top: 15%;
   left: -45%;
   width: 220%;
   height: 100%;
