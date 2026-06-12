@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <section class="hero-section">
+    <section class="hero-section" ref="heroPosition">
       <!-- Decorative Sun -->
       <div class="hero-sun-decoration animate-shimmer">
         <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
@@ -84,26 +84,28 @@
         </p>
       </div>
     </section>
-
-    <section
-      class="cloud-bridge"
-      aria-label="动态云朵衔接区"
-    >
-      <div class="cloud-track track-one">
-        <span class="cloud c1" />
-        <span class="cloud c2" />
-        <span class="cloud c3" />
-        <span class="cloud c4" />
-        <span class="cloud c5" />
-      </div>
-      <div class="cloud-track track-two">
-        <span class="cloud c6" />
-        <span class="cloud c7" />
-        <span class="cloud c8" />
-        <span class="cloud c9" />
-      </div>
-      <div class="bridge-shimmer" />
-    </section>
+    <Teleport to="body">
+      <section
+        class="cloud-bridge"
+        aria-label="动态云朵衔接区"
+        :style="cloudPositionStyle"
+      >
+        <div class="cloud-track track-one">
+          <span class="cloud c1" />
+          <span class="cloud c2" />
+          <span class="cloud c3" />
+          <span class="cloud c4" />
+          <span class="cloud c5" />
+        </div>
+        <div class="cloud-track track-two">
+          <span class="cloud c6" />
+          <span class="cloud c7" />
+          <span class="cloud c8" />
+          <span class="cloud c9" />
+        </div>
+        <div class="bridge-shimmer" />
+      </section>
+    </Teleport>
 
     <section class="home-main">
       <section class="block">
@@ -250,14 +252,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { blogApi } from '@/api/blog'
 import { documentApi } from '@/api/document'
 import { weatherApi } from '@/api/weather'
 
 const router = useRouter()
-
+const cloudSpeed = 2.5
+const heroPosition = ref(null)
+const baseScrollY = ref(0)
+const cloudPosition=ref({ top: 0 , left: 0 })
+const baseCloudPosition = ref(0)
 const currentDate = ref('')
 const currentTime = ref('')
 const currentWeekday = ref('')
@@ -334,6 +340,14 @@ const weatherMeta = computed(() => {
 
   return meta.join(' · ')
 })
+
+const cloudPositionStyle=computed(()=>{
+  return {
+  position:'absolute',
+  left:`0px`,
+  top:`${cloudPosition.value.top}px`,
+  zIndex: 9999
+}})
 
 const updateDateTime = () => {
   const now = new Date()
@@ -506,18 +520,39 @@ const prefetchCommonRoutes = () => {
   })
 }
 
-onMounted(() => {
+const InitializeCloudPosition = () => {
+  if(!heroPosition.value) return;
+  const rect = heroPosition.value.getBoundingClientRect()
+  baseCloudPosition.value =rect.bottom + window.scrollY//定位云朵初始位置
+  baseScrollY.value = window.scrollY//定位scroll初始值
+  UpdateCloudPosition()
+}
+
+const UpdateCloudPosition = () => {
+  cloudPosition.value.top = baseCloudPosition.value + ( 1 - cloudSpeed ) * ( window.scrollY - baseScrollY.value )
+}
+
+onMounted(async () => {
   updateDateTime()
   timeInterval = setInterval(updateDateTime, 1000)
-  loadWeather()
+
+  await nextTick()
+  await loadWeather()
   weatherInterval = setInterval(loadWeather, 30 * 60 * 1000)
+  await nextTick()
+  
+  InitializeCloudPosition()
+
   loadContent()
   prefetchCommonRoutes()
+  window.addEventListener('scroll',UpdateCloudPosition)
+  
 })
 
 onUnmounted(() => {
   if (timeInterval) clearInterval(timeInterval)
   if (weatherInterval) clearInterval(weatherInterval)
+  window.removeEventListener('scroll',UpdateCloudPosition)
 })
 </script>
 
