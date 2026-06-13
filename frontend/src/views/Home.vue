@@ -232,18 +232,37 @@
             class="recent-item"
             @click="navigateToBlog(blog)"
           >
-            <h3>{{ blog.title }}</h3>
-            <p>{{ blog.description || blog.excerpt || '暂无摘要。' }}</p>
-            <div class="meta-line">
-              <span class="pill">{{ formatDate(blog.publishedAt || blog.createdAt || blog.date) }}</span>
-              <span class="pill">{{ blog.category || '未分类' }}</span>
-              <span
-                v-if="blog.tags && blog.tags.length"
-                class="pill"
-              >
-                {{ blog.tags.slice(0, 2).join(' · ') }}
-              </span>
+            <div class="recent-content">
+              <h3>{{ blog.title }}</h3>
+              <p>{{ blog.description || blog.excerpt || '暂无摘要。' }}</p>
+              <div class="meta-line">
+                <span class="pill">{{ formatDate(blog.publishedAt || blog.createdAt || blog.date) }}</span>
+                <span class="pill">{{ blog.category || '未分类' }}</span>
+                <span
+                  v-if="blog.tags && blog.tags.length"
+                  class="pill"
+                >
+                  {{ blog.tags.slice(0, 2).join(' · ') }}
+                </span>
+              </div>
             </div>
+            <aside class="blog-side">
+              <div
+                v-if="getCoverSrc(blog)"
+                class="blog-cover"
+              >
+                <img
+                  :src="getCoverSrc(blog)"
+                  alt="博客封面"
+                  loading="lazy"
+                  decoding="async"
+                  @error="handleImageError(blog)"
+                />
+              </div>
+              <div class="read-more">
+                阅读更多 <i class="fas fa-arrow-right" />
+              </div>
+            </aside>
           </article>
         </div>
       </section>
@@ -257,6 +276,7 @@ import { useRouter } from 'vue-router'
 import { blogApi } from '@/api/blog'
 import { documentApi } from '@/api/document'
 import { weatherApi } from '@/api/weather'
+import { resolveStoredAssetUrl } from '@/utils/assetUrl'
 
 const router = useRouter()
 const cloudSpeed = 2.5
@@ -264,6 +284,7 @@ const heroPosition = ref(null)
 const baseScrollY = ref(0)
 const cloudPosition=ref({ top: 0 , left: 0 })
 const baseCloudPosition = ref(0)
+
 const currentDate = ref('')
 const currentTime = ref('')
 const currentWeekday = ref('')
@@ -271,6 +292,8 @@ const pinnedDocuments = ref([])
 const pinnedBlogs = ref([])
 const recentBlogs = ref([])
 const loading = ref(false)
+const coverErrorBlogs = ref({})
+
 const error = ref('')
 const weatherLoading = ref(true)
 const weatherError = ref(false)
@@ -444,6 +467,25 @@ const loadRecentBlogs = async () => {
   }
   recentBlogs.value = []
   return []
+}
+
+const getBlogId = (blog) => blog?.id || blog?._id || blog?.slug
+
+const getCoverSrc = (blog) => {
+  const id = getBlogId(blog)
+  if (id && coverErrorBlogs.value[id]) return ''
+  const href = blog?.coverImage
+  if (!href) return ''
+  return resolveStoredAssetUrl(href)
+}
+
+const handleImageError = (blog) => {
+  const id = getBlogId(blog)
+  if (!id) return
+  coverErrorBlogs.value = {
+    ...coverErrorBlogs.value,
+    [id]: true
+  }
 }
 
 const loadContent = async () => {
@@ -1073,19 +1115,81 @@ onUnmounted(() => {
 }
 
 .recent-item {
-  padding: 1rem 1rem 0.95rem;
+  display: flex;
+  gap: 0.9rem;
+  align-items: stretch;
+  padding: 1rem;
 }
 
-.recent-item h3 {
+.recent-content {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-content h3 {
   margin: 0;
   color: #2f77ba;
   font-size: 1.08rem;
+  line-height: 1.32;
 }
 
-.recent-item p {
+.recent-content p {
   margin: 0.5rem 0 0;
   color: #587a93;
   line-height: 1.52;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-side {
+  width: 210px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.blog-cover {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(122, 200, 245, 0.38);
+  background: linear-gradient(135deg, rgba(235, 249, 255, 0.95), rgba(255, 255, 255, 0.8));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.blog-cover img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.28s ease;
+}
+
+.recent-item:hover .blog-cover img {
+  transform: scale(1.04);
+}
+
+.read-more {
+  align-self: flex-end;
+  color: #2f84d7;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.read-more i {
+  margin-left: 0.22rem;
+  transition: transform 0.22s ease;
+}
+
+.recent-item:hover .read-more i {
+  transform: translateX(3px);
 }
 
 .state-box {
@@ -1156,6 +1260,18 @@ onUnmounted(() => {
   .cloud-track {
     left: -75%;
     width: 260%;
+  }
+
+  .recent-item {
+    flex-direction: column;
+  }
+
+  .blog-side {
+    width: 100%;
+  }
+
+  .read-more {
+    align-self: flex-start;
   }
 }
 </style>
