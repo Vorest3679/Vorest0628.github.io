@@ -89,6 +89,7 @@
         class="cloud-bridge"
         aria-label="动态云朵衔接区"
         :style="cloudPositionStyle"
+        v-if="isHomeRoute"
       >
         <div class="cloud-track track-one">
           <span class="cloud c1" />
@@ -272,13 +273,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter,useRoute } from 'vue-router'
 import { blogApi } from '@/api/blog'
 import { documentApi } from '@/api/document'
 import { weatherApi } from '@/api/weather'
 import { resolveStoredAssetUrl } from '@/utils/assetUrl'
 
 const router = useRouter()
+const route = useRoute()
 const cloudSpeed = 2.5
 const heroPosition = ref(null)
 const baseScrollY = ref(0)
@@ -313,6 +315,8 @@ const weatherCard = ref({
 
 let timeInterval = null
 let weatherInterval = null
+
+const isHomeRoute = computed(() => route.name === 'home')
 
 const weatherHeadline = computed(() => {
   if (weatherLoading.value && weatherCard.value.temperature === null) {
