@@ -154,26 +154,39 @@ h3 {
   line-height: 1.6;
 }
 
-.personal-info p {
-  font-size: 1rem; /* 统一字体大小 */
-  color: #333; /* 与Home页面统一 */
-  margin-bottom: 15px;
-  text-align: justify;
+.about .personal-info {
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(237, 248, 255, 0.74));
+  box-shadow:
+    0 12px 34px rgba(35, 100, 143, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-.personal-info ul {
+.about .personal-info p {
+  font-size: 1rem; /* 统一字体大小 */
+  color: #29465d; /* 在主题背景上保持清晰对比 */
+  margin-bottom: 15px;
+  text-align: justify;
+  line-height: 1.85;
+}
+
+.about .personal-info ul {
   list-style: disc; /* 使用简单的圆点 */
   padding-left: 20px;
   margin-left: 0;
 }
 
-.personal-info ul li {
+.about .personal-info ul li {
   margin-bottom: 8px;
   padding: 5px 0; /* 简化padding */
   background-color: transparent; /* 去除背景色 */
   border-radius: 0;
   border-left: none; /* 去除左边框 */
-  color: #333;
+  color: #35556d;
 }
 
 .skills {
