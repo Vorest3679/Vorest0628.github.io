@@ -1,13 +1,16 @@
 <template>
   <div class="blog-page">
     <header class="page-head">
-      <p class="head-kicker">
-        Article Stream
-      </p>
-      <h1>博客</h1>
-      <p class="head-desc">
-        记录开发、灵感和日常更新。
-      </p>
+      <div class="head-copy">
+        <p class="head-kicker">
+          Article Stream
+        </p>
+        <h1>博客</h1>
+        <p class="head-desc">
+          记录开发、灵感和日常更新。
+        </p>
+      </div>
+      <RssSubscribe />
     </header>
 
     <section class="filter-card">
@@ -153,6 +156,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { blogApi } from '@/api/blog'
 import { resolveStoredAssetUrl } from '@/utils/assetUrl'
+import RssSubscribe from '@/components/RssSubscribe.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -321,6 +325,11 @@ onUnmounted(() => {
 }
 
 .page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
   border-radius: 24px;
   padding: 1.3rem 1.2rem 1.15rem;
   border: 1px solid rgba(255, 255, 255, 0.72);

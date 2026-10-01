@@ -1,6 +1,12 @@
 <template>
-  <i class="app-icon" aria-hidden="true">
-    <FontAwesomeIcon :icon="icon" :spin="spin" />
+  <i
+    class="app-icon"
+    aria-hidden="true"
+  >
+    <FontAwesomeIcon
+      :icon="icon"
+      :spin="spin"
+    />
   </i>
 </template>
 
@@ -13,8 +19,10 @@ import {
   faBars,
   faChevronLeft,
   faChevronRight,
+  faCheck,
   faCircleInfo,
   faCloudArrowUp,
+  faCopy,
   faEye,
   faEyeSlash,
   faFile,
@@ -25,6 +33,7 @@ import {
   faFileWord,
   faMagnifyingGlass,
   faRightFromBracket,
+  faRss,
   faSliders,
   faSpinner,
   faTriangleExclamation,
@@ -46,7 +55,9 @@ const icons = {
   bilibili: faBilibili,
   'chevron-left': faChevronLeft,
   'chevron-right': faChevronRight,
+  check: faCheck,
   'cloud-upload-alt': faCloudArrowUp,
+  copy: faCopy,
   'exclamation-triangle': faTriangleExclamation,
   eye: faEye,
   'eye-slash': faEyeSlash,
@@ -62,6 +73,7 @@ const icons = {
   markdown: faMarkdown,
   'magnifying-glass': faMagnifyingGlass,
   'right-from-bracket': faRightFromBracket,
+  rss: faRss,
   'sign-in-alt': faRightFromBracket,
   sliders: faSliders,
   spinner: faSpinner,

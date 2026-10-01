@@ -5,6 +5,11 @@ import 'katex/dist/katex.min.css'
 import AppIcon from './components/AppIcon.vue'
 import App from './App.vue'
 import router from './router'
+import { getRssFeedUrl } from './utils/rss'
+
+// 自动发现地址与订阅弹窗统一使用网站根路径的公开订阅地址。
+const rssDiscoveryLink = document.querySelector('link[rel="alternate"][type="application/rss+xml"]')
+if (rssDiscoveryLink) rssDiscoveryLink.href = getRssFeedUrl()
 
 // 添加全局错误处理，过滤浏览器扩展错误
 window.addEventListener('error', (event) => {

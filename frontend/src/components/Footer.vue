@@ -14,6 +14,7 @@
       </p>
 
       <div class="social-links">
+        <RssSubscribe compact />
         <a
           href="https://github.com/Vorest3679"
           target="_blank"
@@ -37,6 +38,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import RssSubscribe from './RssSubscribe.vue'
 
 const currentYear = computed(() => new Date().getFullYear())
 </script>

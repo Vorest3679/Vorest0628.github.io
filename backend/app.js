@@ -179,6 +179,7 @@ app.use(async (req, res, next) => {
 })
 
 // 路由配置
+app.use('/api', require('./routes/rssRoutes'))
 app.use('/api/auth', require('./routes/authRoutes'))
 app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/blogs', require('./routes/blogRoutes'))

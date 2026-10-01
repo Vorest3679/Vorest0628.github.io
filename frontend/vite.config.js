@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       verbose: true,
       disable: false,
       threshold: 10240,  // 10KB以上才压缩
-      algorithm: 'brotli',  // 使用 Brotli 压缩（较gzip优疾）
+      algorithm: 'brotliCompress',  // 使用 Brotli 压缩
       ext: '.br'
   })],
     
@@ -27,6 +27,12 @@ export default defineConfig(({ mode }) => {
   server: {
     port: 5173,
     proxy: {
+      '^/rss\\.xml(?:\\?|$)': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: false,
+        xfwd: true,
+        rewrite: path => path.replace(/^\/rss\.xml/, '/api/rss.xml')
+      },
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
