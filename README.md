@@ -38,7 +38,7 @@
 - **构建工具**: `Vite`
 - **路由**: `Vue Router`
 - **状态管理**: `Pinia`
-- **UI组件库**: `Element Plus`
+- **UI组件**: 基于 Vue 的自定义组件与 CSS
 - **HTTP客户端**: `Axios`
 - **文档预览**:
   - `@vue-office/docx` (Word)

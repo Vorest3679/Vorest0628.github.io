@@ -56,7 +56,6 @@ export default defineConfig(({ mode }) => {
         'vue',
         'vue-router',
         'pinia',
-        'element-plus',
         'axios',
         '@vueuse/core',
         'date-fns',
@@ -84,7 +83,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             // 细粒度分离第三方库，优化加载性能
             'vue-core': ['vue', 'vue-router', 'pinia'],
-            'element-ui': ['element-plus'],
             'particles': ['particles.js'],
             'doc-viewer': ['@vue-office/docx', '@vue-office/excel', '@vue-office/pptx'],
             'pdf-lib': ['pdfjs-dist'],

@@ -1,5 +1,6 @@
 <template>
   <button
+    ref="trigger"
     type="button"
     class="rss-trigger"
     :class="{ compact }"
@@ -13,113 +14,171 @@
   </button>
 
   <Teleport to="body">
-    <dialog
-      ref="dialog"
-      class="rss-dialog"
-      :aria-labelledby="`${id}-title`"
-      :aria-describedby="`${id}-description`"
-      @click="handleBackdropClick"
+    <Transition
+      name="rss-modal"
+      @after-leave="restorePage"
     >
-      <div class="rss-dialog-head">
-        <div class="rss-heading">
-          <span class="rss-badge"><AppIcon name="rss" /></span>
-          <h2 :id="`${id}-title`">
-            订阅博客更新
-          </h2>
-        </div>
-        <button
-          type="button"
-          class="rss-close"
-          aria-label="关闭订阅弹窗"
-          @click="closeDialog"
-        >
-          <AppIcon name="xmark" />
-        </button>
-      </div>
-
-      <p
-        :id="`${id}-description`"
-        class="rss-description"
+      <div
+        v-if="isOpen"
+        class="rss-overlay"
+        @click.self="closeDialog"
       >
-        把链接添加到你的 RSS 阅读器，新文章发布后即可获取概览，点击「阅读全文」访问原文。
-      </p>
-
-      <label
-        :for="`${id}-url`"
-        class="rss-label"
-      >订阅链接</label>
-      <div class="rss-link-row">
-        <input
-          :id="`${id}-url`"
-          ref="urlInput"
-          :value="feedUrl"
-          type="url"
-          readonly
-          autofocus
-          spellcheck="false"
-          @click="selectLink"
+        <section
+          ref="dialog"
+          class="rss-dialog"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="`${id}-title`"
+          :aria-describedby="`${id}-description`"
+          tabindex="-1"
         >
-        <button
-          type="button"
-          class="rss-copy"
-          :disabled="isCopying"
-          @click="copyLink"
-        >
-          <AppIcon :name="isCopied ? 'check' : 'copy'" />
-          {{ isCopied ? '已复制' : '复制链接' }}
-        </button>
-      </div>
-      <p
-        class="rss-feedback"
-        role="status"
-        aria-live="polite"
-      >
-        {{ feedback }}
-      </p>
+          <div class="rss-dialog-head">
+            <div class="rss-heading">
+              <span class="rss-badge"><AppIcon name="rss" /></span>
+              <h2 :id="`${id}-title`">
+                订阅博客更新
+              </h2>
+            </div>
+            <button
+              type="button"
+              class="rss-close"
+              aria-label="关闭订阅弹窗"
+              @click="closeDialog"
+            >
+              <AppIcon name="xmark" />
+            </button>
+          </div>
 
-      <div class="rss-dialog-foot">
-        <span>文章摘要 · 分类与标签 · 原文链接</span>
-        <a
-          :href="feedUrl"
-          target="_blank"
-          rel="noopener"
-        >查看订阅源 <AppIcon name="arrow-right" /></a>
+          <p
+            :id="`${id}-description`"
+            class="rss-description"
+          >
+            把链接添加到你的 RSS 阅读器，新文章发布后即可获取概览，点击「阅读全文」访问原文。
+          </p>
+
+          <label
+            :for="`${id}-url`"
+            class="rss-label"
+          >订阅链接</label>
+          <div class="rss-link-row">
+            <input
+              :id="`${id}-url`"
+              ref="urlInput"
+              :value="feedUrl"
+              type="url"
+              readonly
+              spellcheck="false"
+              @click="selectLink"
+            >
+            <button
+              type="button"
+              class="rss-copy"
+              :disabled="isCopying"
+              @click="copyLink"
+            >
+              <AppIcon :name="isCopied ? 'check' : 'copy'" />
+              {{ isCopied ? '已复制' : '复制链接' }}
+            </button>
+          </div>
+          <p
+            class="rss-feedback"
+            role="status"
+            aria-live="polite"
+          >
+            {{ feedback }}
+          </p>
+
+          <div class="rss-dialog-foot">
+            <span>文章摘要 · 分类与标签 · 原文链接</span>
+            <a
+              :href="feedUrl"
+              target="_blank"
+              rel="noopener"
+            >查看订阅源 <AppIcon name="arrow-right" /></a>
+          </div>
+        </section>
       </div>
-    </dialog>
+    </Transition>
   </Teleport>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onDeactivated, ref, useId } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onDeactivated, ref, useId } from 'vue'
 import { getRssFeedUrl } from '@/utils/rss'
 
 defineProps({ compact: Boolean })
 
 const id = useId()
+const isOpen = ref(false)
+const trigger = ref(null)
 const dialog = ref(null)
 const urlInput = ref(null)
 const feedUrl = computed(getRssFeedUrl)
 const feedback = ref('复制链接后，在阅读器中选择「添加订阅」。')
 const isCopied = ref(false)
 const isCopying = ref(false)
+let pageState = null
 
-const openDialog = () => {
+const openDialog = async () => {
   isCopied.value = false
   feedback.value = '复制链接后，在阅读器中选择「添加订阅」。'
-  dialog.value?.showModal()
+  if (!pageState) {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    const backgrounds = Array.from(document.body.children)
+      .filter(element => !element.matches('.rss-overlay, .custom-cursor'))
+      .map(element => ({ element, inert: element.inert }))
+    pageState = {
+      backgrounds,
+      overflow: document.body.style.overflow,
+      paddingRight: document.body.style.paddingRight
+    }
+    // 背景包含 Teleport 导航；光标保持在普通页面层级的最上方。
+    backgrounds.forEach(({ element }) => { element.inert = true })
+    if (scrollbarWidth > 0) {
+      const padding = parseFloat(getComputedStyle(document.body).paddingRight) || 0
+      document.body.style.paddingRight = `${padding + scrollbarWidth}px`
+    }
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleDialogKeydown)
+  }
+  isOpen.value = true
+  await nextTick()
+  if (isOpen.value) focusLink()
 }
 
-const closeDialog = () => dialog.value?.close()
+const closeDialog = () => { isOpen.value = false }
+const restorePage = () => {
+  if (!pageState) return
+  const { backgrounds, overflow, paddingRight } = pageState
+  backgrounds.forEach(({ element, inert }) => { element.inert = inert })
+  document.body.style.overflow = overflow
+  document.body.style.paddingRight = paddingRight
+  document.removeEventListener('keydown', handleDialogKeydown)
+  pageState = null
+  if (trigger.value?.isConnected) trigger.value.focus({ preventScroll: true })
+}
+
+const handleDialogKeydown = (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeDialog()
+  } else if (event.key === 'Tab') {
+    const controls = dialog.value?.querySelectorAll('button:not(:disabled), input, a[href]')
+    if (!controls?.length) return
+    const first = controls[0]
+    const last = controls[controls.length - 1]
+    const active = document.activeElement
+    if (!dialog.value.contains(active) || (event.shiftKey ? active === first : active === last)) {
+      event.preventDefault()
+      const next = event.shiftKey ? last : first
+      next.focus()
+    }
+  }
+}
+const focusLink = () => urlInput.value?.focus({ preventScroll: true })
 const selectLink = () => {
-  urlInput.value?.focus()
+  focusLink()
   urlInput.value?.select()
-}
-
-const handleBackdropClick = (event) => {
-  if (event.target !== dialog.value) return
-  const bounds = dialog.value.getBoundingClientRect()
-  if (event.clientX < bounds.left || event.clientX > bounds.right ||
-      event.clientY < bounds.top || event.clientY > bounds.bottom) closeDialog()
 }
 
 const copyLink = async () => {
@@ -143,8 +202,12 @@ const copyLink = async () => {
   }
 }
 
-onDeactivated(closeDialog)
-onBeforeUnmount(closeDialog)
+const cleanupDialog = () => {
+  closeDialog()
+  restorePage()
+}
+onDeactivated(cleanupDialog)
+onBeforeUnmount(cleanupDialog)
 </script>
 
 <style scoped>
@@ -188,7 +251,7 @@ onBeforeUnmount(closeDialog)
 }
 
 .rss-dialog {
-  width: min(560px, calc(100vw - 2rem));
+  width: min(560px, 100%);
   max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   margin: auto;
@@ -200,9 +263,48 @@ onBeforeUnmount(closeDialog)
   box-shadow: 0 24px 80px rgba(26, 65, 98, 0.25);
 }
 
-.rss-dialog::backdrop {
+.rss-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
   background: rgba(30, 62, 87, 0.4);
   backdrop-filter: blur(5px);
+}
+
+/* 在普通页面层级播放进出动画，让自定义光标始终位于遮罩上方。 */
+.rss-modal-enter-active {
+  transition: opacity 280ms ease;
+}
+
+.rss-modal-leave-active {
+  transition: opacity 220ms ease;
+}
+
+.rss-modal-enter-active .rss-dialog {
+  transition: opacity 280ms ease, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.rss-modal-leave-active .rss-dialog {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.rss-modal-enter-from,
+.rss-modal-leave-to {
+  opacity: 0;
+}
+
+.rss-modal-enter-from .rss-dialog {
+  opacity: 0;
+  transform: translateY(16px) scale(0.94);
+}
+
+.rss-modal-leave-to .rss-dialog {
+  opacity: 0;
+  transform: translateY(10px) scale(0.97);
 }
 
 .rss-dialog-head,
@@ -257,5 +359,14 @@ onBeforeUnmount(closeDialog)
   .rss-dialog { padding: 1.2rem; border-radius: 20px; }
   .rss-link-row { flex-direction: column; }
   .rss-copy { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rss-modal-enter-active,
+  .rss-modal-leave-active,
+  .rss-modal-enter-active .rss-dialog,
+  .rss-modal-leave-active .rss-dialog {
+    transition-duration: 1ms;
+  }
 }
 </style>

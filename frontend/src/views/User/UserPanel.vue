@@ -21,37 +21,45 @@
     <!-- 普通用户界面 -->
     <div class="user-section">
       <div class="section-tabs">
-        <el-tabs
-          v-model="activeTab"
-          type="border-card"
+        <div
+          ref="tabList"
           class="custom-tabs"
+          role="tablist"
+          aria-label="用户管理"
         >
-          <el-tab-pane 
-            v-for="tab in userTabs" 
+          <button
+            v-for="(tab, index) in userTabs"
+            :id="`${id}-tab-${tab.key}`"
             :key="tab.key"
-            :label="tab.label"
-            :name="tab.key"
+            type="button"
+            class="panel-tab"
+            :class="{ active: activeTab === tab.key }"
+            role="tab"
+            :aria-selected="activeTab === tab.key"
+            :aria-controls="`${id}-panel-${tab.key}`"
+            :tabindex="activeTab === tab.key ? 0 : -1"
+            @click="activeTab = tab.key"
+            @keydown="handleTabKeydown($event, index)"
           >
-            <template #label>
-              <span class="tab-label">
-                {{ tab.label }}
-                <el-badge 
-                  v-if="tab.count > 0" 
-                  :value="tab.count" 
-                  type="primary"
-                  style="margin-left: 5px"
-                />
-              </span>
-            </template>
-          </el-tab-pane>
-        </el-tabs>
+            {{ tab.label }}
+            <span
+              v-if="tab.count > 0"
+              class="tab-count"
+              :aria-label="`${tab.count} 条评论`"
+            >{{ tab.count > 99 ? '99+' : tab.count }}</span>
+          </button>
+        </div>
       </div>
 
       <div class="tab-content">
         <!-- 我的评论 -->
         <div
           v-show="activeTab === 'my-comments'"
+          :id="`${id}-panel-my-comments`"
           class="my-comments"
+          role="tabpanel"
+          :aria-labelledby="`${id}-tab-my-comments`"
+          tabindex="0"
         >
           <UserCommentManager />
         </div>
@@ -59,7 +67,11 @@
         <!-- 账户设置 -->
         <div
           v-show="activeTab === 'settings'"
+          :id="`${id}-panel-settings`"
           class="account-settings"
+          role="tabpanel"
+          :aria-labelledby="`${id}-tab-settings`"
+          tabindex="0"
         >
           <UserAccountSettings />
         </div>
@@ -69,10 +81,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineAsyncComponent } from 'vue'
-import { ElBadge, ElTabPane, ElTabs } from 'element-plus'
-import 'element-plus/es/components/badge/style/css'
-import 'element-plus/es/components/tabs/style/css'
+import { ref, computed, onMounted, defineAsyncComponent, useId } from 'vue'
 import { useAuthStore } from '@/store/modules/auth'
 import { useRouter } from 'vue-router'
 import { userApi } from '@/api/user'
@@ -83,6 +92,8 @@ const UserAccountSettings = defineAsyncComponent(() => import('./components/User
 
 const authStore = useAuthStore()
 const router = useRouter()
+const id = useId()
+const tabList = ref(null)
 
 // 响应式数据
 const activeTab = ref('my-comments')
@@ -95,6 +106,21 @@ const userTabs = computed(() => [
   { key: 'my-comments', label: '我的评论', count: userStats.value.myComments },
   { key: 'settings', label: '账户设置', count: 0 }
 ])
+
+const handleTabKeydown = (event, index) => {
+  const count = userTabs.value.length
+  let nextIndex
+  switch (event.key) {
+    case 'ArrowRight': nextIndex = (index + 1) % count; break
+    case 'ArrowLeft': nextIndex = (index + count - 1) % count; break
+    case 'Home': nextIndex = 0; break
+    case 'End': nextIndex = count - 1; break
+    default: return
+  }
+  event.preventDefault()
+  activeTab.value = userTabs.value[nextIndex].key
+  tabList.value?.querySelectorAll('[role="tab"]')[nextIndex]?.focus()
+}
 
 // 加载用户统计数据
 const loadUserStats = async () => {
@@ -182,13 +208,43 @@ onMounted(async () => {
 }
 
 .custom-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: #f4f7fb;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
 }
 
-.tab-label {
-  display: flex;
+.panel-tab {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #60758b;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel-tab:hover { color: #2676ba; background: #e8f2fc; }
+.panel-tab.active { color: #2676ba; background: white; box-shadow: 0 2px 8px rgba(38, 118, 186, 0.12); }
+.panel-tab:focus-visible,
+[role="tabpanel"]:focus-visible { outline: 3px solid #65baff; outline-offset: 2px; }
+
+.tab-count {
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #2f87d7;
+  color: white;
+  font-size: 0.75rem;
+  line-height: 1.4;
 }
 
 .tab-content {
@@ -219,5 +275,6 @@ onMounted(async () => {
   .tab-content {
     padding: 15px;
   }
+  .panel-tab { flex: 1; padding: 10px 12px; }
 }
 </style>
