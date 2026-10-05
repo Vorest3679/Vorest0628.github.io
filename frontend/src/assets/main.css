@@ -39,3 +39,44 @@ select {
   padding: 0.35rem 0;
   max-width: 100%;
 }
+
+/* Shared by blog content, the editor preview, and Markdown document previews. */
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper {
+  max-width: 100%;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper > table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper th,
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper td {
+  min-width: 7rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #cbd5e1;
+  text-align: left;
+  vertical-align: top;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper th {
+  background: #eef5fb;
+  font-weight: 600;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper [align="center"] {
+  text-align: center;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper [align="right"] {
+  text-align: right;
+}
+
+:is(.article-content, .markdown-preview, .markdown-content) .markdown-table-wrapper tbody tr:nth-child(even) {
+  background: rgba(148, 163, 184, 0.08);
+}

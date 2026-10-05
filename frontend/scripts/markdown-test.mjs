@@ -84,4 +84,25 @@ const imageRenderer = new Renderer()
 imageRenderer.image = () => '<img data-custom="yes">'
 const custom = createMarkdownRenderer({ renderer: imageRenderer })
 assert.match(custom.parse('![image](test.png)', { async: false }), /data-custom="yes"/)
-console.log('Markdown math regression checks passed.')
+
+const table = `| 安全级别 | RSA 密钥长度 | ECC 密钥长度 |
+|---------|-------------|-------------|
+| 128 位 | 3072 位 | 256 位 |
+| 256 位 | 15360 位 | 512 位 |`
+const assertTable = (html) => {
+  assert.match(html, /<div class="markdown-table-wrapper"><table>/)
+  assert.equal((html.match(/<th>/g) || []).length, 3)
+  assert.equal((html.match(/<td>/g) || []).length, 6)
+  assert.match(html, /<td>15360 位<\/td>/)
+}
+assertTable(parse(table))
+assertTable(custom.parse(table, { async: false }))
+assertTable(parse(`正文\n\n${table}\n\n$$x^2$$`))
+const alignedTable = parse('| 左 | 中 | 右 |\n| :--- | :---: | ---: |\n| $x_1$ | **粗体** | 3 |')
+for (const align of ['left', 'center', 'right']) {
+  assert.match(alignedTable, new RegExp(`<th align="${align}">`))
+}
+assert.match(alignedTable, /class="katex"/)
+assert.match(alignedTable, /<strong>粗体<\/strong>/)
+assert.doesNotMatch(parse('```markdown\n' + table + '\n```'), /markdown-table-wrapper/)
+console.log('Markdown math and table regression checks passed.')

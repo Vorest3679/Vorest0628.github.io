@@ -1,4 +1,4 @@
-import { Marked, type MarkedOptions } from 'marked'
+import { Marked, Renderer, type MarkedOptions } from 'marked'
 import markedKatex from 'marked-katex-extension'
 import katex from 'katex'
 
@@ -77,6 +77,14 @@ export const createMarkdownRenderer = (options: MarkedOptions = {}): Marked => {
     gfm: true,
     breaks: false,
     ...options
+  })
+  const renderTable = options.renderer?.table || Renderer.prototype.table
+  renderer.use({
+    renderer: {
+      table(token) {
+        return `<div class="markdown-table-wrapper">${renderTable.call(this, token)}</div>\n`
+      }
+    }
   })
   const mathOptions = {
     throwOnError: false,
