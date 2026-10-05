@@ -19,7 +19,7 @@
     :class="{ 'app-loaded': !isInitialLoading }"
   >
     <!-- Anime Summer Sky Background Layers -->
-    <div class="page-bg" :class="{ 'page-bg-ready': isBackgroundReady }" />
+    <div class="page-bg" />
     <div class="page-bg-overlay" />
     <AnimatedDecorations v-if="showParticles" />
     <ParticlesBackground v-if="showParticles" />
@@ -88,7 +88,6 @@ const ParticlesBackground = defineAsyncComponent(() => import('./ParticlesBackgr
 const AnimatedDecorations = defineAsyncComponent(() => import('./AnimatedDecorations.vue'))
 
 const showParticles = ref(false)
-const isBackgroundReady = ref(false)
 const showLoginModal = ref(false)
 const authStore = useAuthStore()
 const isInitialLoading = ref(true)
@@ -113,11 +112,10 @@ onMounted(() => {
   }, 300)
 
   const enableDecorations = () => {
-    isBackgroundReady.value = true
     showParticles.value = true
   }
 
-  // 将纯装饰性的图片和粒子效果移出首屏关键路径。
+  // 粒子效果延迟启动，背景图片由 CSS 直接加载。
   decorationsTimer = setTimeout(enableDecorations, 5000)
 })
 
@@ -344,14 +342,12 @@ body {
   width: 100%;
   height: 100%;
   z-index: -3;
-  background: linear-gradient(180deg, #b8e8ff 0%, #e8f8ff 52%, #f6fcff 100%);
+  background:
+    url('/assets/scenery-bg.webp'),
+    linear-gradient(180deg, #b8e8ff 0%, #e8f8ff 52%, #f6fcff 100%);
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
-}
-
-.page-bg-ready {
-  background-image: url('/assets/scenery-bg.jpg');
 }
 
 .page-bg-overlay {

@@ -141,6 +141,27 @@ include /你的项目部署路径/deploy/nginx/rss.conf;
 
 如果后端不在 `127.0.0.1:3000`，请同步修改 `proxy_pass`。配置后运行 `nginx -t` 检查，再重载 Nginx。`location = /rss.xml` 精确匹配订阅地址，避免请求进入前端的 SPA 页面回退。
 
+网站的 SPA 回退应放在 `location /` 内，与 RSS 反代并列，例如：
+
+```nginx
+# 位于本站点的 server 块内；如已有 location /，修改已有配置即可。
+include /你的项目部署路径/deploy/nginx/rss.conf;
+
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+如果现有伪静态使用了 `server` 级别的 `rewrite`，或 `if (!-e $request_filename)` 中将所有路径改写到 `/index.html`，应将 SPA 回退改为上面的 `location /` 配置。[Nginx 会先执行 server 级改写，再匹配 location](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html)，因此仅调整 RSS 配置的书写顺序不能解决这类覆盖问题。RSS 反代明确设置 `proxy_intercept_errors off`，防止后端错误响应被替换为前端错误页。
+
+部署后直接检查 HTTP 响应：
+
+```bash
+curl -i https://你的域名/rss.xml
+```
+
+正常应返回 `200`、`Content-Type: application/rss+xml; charset=utf-8` 和 XML 内容。若返回 HTML 或 Vue 的 404 页面，检查本站点的 RSS 反代与伪静态配置是否生效；若返回 `接口不存在` 的 JSON，检查实际运行的后端目录是否包含最新 RSS 路由，并重启管理该后端的进程。订阅源必须直接返回 XML，RSS 阅读器不会执行前端路由跳转。
+
 ## 部署指南
 
 本项目当前推荐采用阿里云服务器直连部署：前端静态资源与后端服务可部署在同一台服务器，由 Nginx 统一转发 `/` 和 `/api`。
