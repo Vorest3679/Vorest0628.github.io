@@ -1,5 +1,26 @@
 import { Marked, type MarkedOptions } from 'marked'
 import markedKatex from 'marked-katex-extension'
+import katex from 'katex'
+
+// Accept a single backslash between equations in pasted cases environments.
+// Keep ordinary LaTeX spacing commands and existing \\ row separators intact.
+const normalizeCasesRows = (latex: string): string => (
+  latex.replace(/\\begin\{cases\}([\s\S]*?)\\end\{cases\}/g, (_environment, body) => {
+    const parts = body.split(/((?<!\\)\\\s+)/)
+    for (let index = 1; index < parts.length; index += 2) {
+      const previousRow = parts[index - 1].split(/\\\\/).pop() || ''
+      const nextRow = parts[index + 1].split(/\\\\/)[0]
+      if (previousRow.includes('=') && nextRow.includes('=')) {
+        parts[index] = `\\\\${parts[index].slice(1)}`
+      }
+    }
+    return `\\begin{cases}${parts.join('')}\\end{cases}`
+  })
+)
+
+// Capture display math before Markdown can consume its backslashes or line breaks.
+const DISPLAY_MATH_RULE = /^\$\$(?!\$)((?:\\[\s\S]|[^\\])+?)\$\$(?!\$)/
+const BLOCK_DISPLAY_MATH_RULE = /^ {0,3}\$\$(?!\$)((?:\\[\s\S]|[^\\])+?)\$\$(?!\$)[ \t]*(?:\n|$)/
 
 const IMAGE_FILE_EXTENSION_REGEX = /\.(?:apng|avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i
 
@@ -57,11 +78,54 @@ export const createMarkdownRenderer = (options: MarkedOptions = {}): Marked => {
     breaks: false,
     ...options
   })
-  renderer.use(markedKatex({
+  const mathOptions = {
     throwOnError: false,
     nonStandard: true,
     strict: false
-  }))
+  }
+  const mathExtension = markedKatex(mathOptions)
+  // Apply compatibility only to math tokens, leaving code and prose untouched.
+  for (const extension of mathExtension.extensions || []) {
+    if (!extension.renderer) continue
+    const renderMath = extension.renderer
+    extension.renderer = function (token) {
+      return renderMath.call(this, { ...token, text: normalizeCasesRows(token.text) })
+    }
+  }
+  renderer.use(mathExtension)
+  renderer.use({
+    extensions: [
+      {
+        name: 'displayKatex',
+        level: 'block',
+        start(src) {
+          return src.match(/^ {0,3}\$\$(?!\$)/m)?.index
+        },
+        tokenizer(src) {
+          const match = src.match(BLOCK_DISPLAY_MATH_RULE)
+          if (match) return { type: 'displayKatex', raw: match[0], text: match[1].trim() }
+        },
+        renderer(token) {
+          return katex.renderToString(normalizeCasesRows(token.text), { ...mathOptions, displayMode: true }) + '\n'
+        }
+      },
+      {
+        name: 'displayKatex',
+        level: 'inline',
+        start(src) {
+          const index = src.indexOf('$$')
+          return index === -1 ? undefined : index
+        },
+        tokenizer(src) {
+          const match = src.match(DISPLAY_MATH_RULE)
+          if (match) return { type: 'displayKatex', raw: match[0], text: match[1].trim() }
+        },
+        renderer(token) {
+          return katex.renderToString(normalizeCasesRows(token.text), { ...mathOptions, displayMode: true })
+        }
+      }
+    ]
+  })
 
   return renderer
 }

@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix",
+    "test:markdown": "node scripts/markdown-test.mjs",
     "test:lcp": "npm run build && node scripts/lcp-test.mjs"
   },
   "dependencies": {

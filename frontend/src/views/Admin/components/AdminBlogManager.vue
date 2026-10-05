@@ -352,11 +352,11 @@ import { adminApi } from '../../../api/admin'
 import { uploadImage } from '../../../api/upload'
 import { useAuthStore } from '../../../store/modules/auth'
 import { authApi } from '../../../api/auth'
-import { marked } from 'marked'
+import { Renderer } from 'marked'
 import DOMPurify from 'dompurify'
 import { OpenAI } from 'openai'
 import { resolveStoredAssetUrl } from '@/utils/assetUrl'
-import { normalizeMarkdownImageDestinations } from '@/utils/markdown'
+import { createMarkdownRenderer, normalizeMarkdownImageDestinations } from '@/utils/markdown'
 
 const authStore = useAuthStore()
 const blogs = ref([])
@@ -414,7 +414,7 @@ const resolveEditorAssetSrc = (href = '') => {// 处理编辑器中的图片链�
 }
 
 // 与博客详情页一致的图片渲染与安全清理
-const renderer = new marked.Renderer()
+const renderer = new Renderer()
 renderer.image = (href = '', title, text) => {
   // 修复 marked 新版本参数传递问题
   if (typeof href === 'object' && href !== null) {
@@ -428,10 +428,10 @@ renderer.image = (href = '', title, text) => {
   const t = title ? ` title="${title}"` : ''
   return `<img src="${src}" alt="${text || ''}"${t} loading="lazy" decoding="async">`
 }
-marked.setOptions({ renderer })
+const markdownRenderer = createMarkdownRenderer({ renderer })
 
 const markdownPreview = computed(() => {
-  const html = marked(normalizeMarkdownImageDestinations(currentBlog.content || ''))
+  const html = markdownRenderer.parse(normalizeMarkdownImageDestinations(currentBlog.content || ''), { async: false })
   const sanitized = DOMPurify.sanitize(html)
   return sanitized
 });
