@@ -2,25 +2,28 @@
   "name": "my-website",
   "version": "1.0.0",
   "description": "个人网站项目 - 包含前端和后端",
-  "scripts": {
-    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
-    "backend:dev": "cd backend && npm run dev",
-    "frontend:dev": "cd frontend && npm run dev",
-    "backend:start": "cd backend && npm start",
-    "frontend:build": "cd frontend && npm run build",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "test:api": "node test-login-api.js"
-  },
   "keywords": [
-    "personal-website",
-    "vue3",
-    "express",
-    "mongodb",
     "blog",
-    "gallery"
+    "express",
+    "gallery",
+    "mongodb",
+    "personal-website",
+    "vue3"
   ],
-  "author": "Vorest",
   "license": "MIT",
+  "author": "Vorest",
+  "scripts": {
+    "dev": "concurrently \"vp run backend:dev\" \"vp run frontend:dev\"",
+    "backend:dev": "vp -C backend run dev",
+    "frontend:dev": "vp -C frontend dev",
+    "backend:start": "vp -C backend run start",
+    "frontend:build": "vp -C frontend build",
+    "install:all": "vp install && vp -C backend install && vp -C frontend install",
+    "test:api": "node test-login-api.js",
+    "prepare": "vp config",
+    "frontend:preview": "vp -C frontend preview",
+    "test": "vp test --run"
+  },
   "dependencies": {
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
@@ -41,10 +44,20 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "vite-plus": "1.0.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": "11.19.0",
+      "onFail": "download"
+    }
   },
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   }
 }

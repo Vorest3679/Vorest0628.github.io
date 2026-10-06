@@ -2,13 +2,14 @@
 
 ## 前端性能测试
 
-在 `frontend` 目录执行 `npm run test:lcp`，会构建前端、启动本地预览并以 Lighthouse 的移动端配置审计首页 LCP。默认预算为 2.5 秒；可通过 `LCP_BUDGET_MS=3000 npm run test:lcp` 调整。若要审计已部署站点，可设置 `LCP_URL`，例如 `LCP_URL=https://example.com npm run test:lcp`。
+在 `frontend` 目录执行 `vp run test:lcp`，会构建前端、启动本地预览并以 Lighthouse 的移动端配置审计首页 LCP。默认预算为 2.5 秒；可通过 `LCP_BUDGET_MS=3000 vp run test:lcp` 调整。若要审计已部署站点，可设置 `LCP_URL`，例如 `LCP_URL=https://example.com vp run test:lcp`。
 
 一个功能全面、技术现代化的全栈个人网站项目，集成了博客、文档库、图库、评论系统、用户中心和强大的管理面板。项目采用前后端分离架构，并支持传统服务器部署。
 
 ## ✨ 功能特性
 
 ### 🏠 核心功能
+
 - **📝 博客系统** - 支持Markdown，文章分类、标签、置顶，全文搜索。
 - **📄 文档库** - 支持多种格式文档（PDF, DOCX, XLSX, PPTX, TXT, MD）的上传、管理和在线预览，支持文档分类、标签和搜索。
 - **🖼️ 图库管理** - 支持图片批量上传、分类管理、标签系统和瀑布流展示。
@@ -19,12 +20,14 @@
 - **🌦️ 天气查询** - （可能存在的隐藏功能）提供天气信息查询。
 
 ### 🎨 界面与交互
+
 - **🌬️ 动态粒子背景** - 基于 `particles.js` 实现的动态蒲公英粒子效果。
 - **📱 响应式设计** - 完美适配桌面、平板和手机等不同尺寸的设备。
 - **💻 现代化UI** - 采用毛玻璃、渐变背景和流畅的动画效果，提升用户视觉体验。
 - **📄 文档在线预览** - 集成 `Vue-Office` 和 `pdfjs-dist`，支持多种主流文档格式的在线预览。
 
 ### ⚙️ 管理功能
+
 - **📊 管理员面板** - 提供一个全面的后台管理系统，用于管理网站的所有内容。
 - **🔐 权限控制** - 基于角色的访问控制（RBAC），区分管理员和普通用户权限。
 - **📈 数据统计** - 提供网站核心数据的统计概览。
@@ -34,8 +37,9 @@
 ## 🛠️ 技术栈
 
 ### 前端 (Frontend)
+
 - **框架**: `Vue 3` (Composition API)
-- **构建工具**: `Vite`
+- **构建工具**: `Vite+ 1.0`（内置 Vite 8 / Rolldown）
 - **路由**: `Vue Router`
 - **状态管理**: `Pinia`
 - **UI组件**: 基于 Vue 的自定义组件与 CSS
@@ -47,9 +51,10 @@
   - `pdfjs-dist` (PDF)
 - **Markdown解析**: `marked`
 - **粒子效果**: `particles.js`
- - **安全**: `dompurify`
+- **安全**: `dompurify`
 
 ### 后端 (Backend)
+
 - **框架**: `Node.js` + `Express`
 - **数据库**: `MongoDB` + `Mongoose`
 - **认证**: `JWT` (JSON Web Token)
@@ -57,10 +62,11 @@
 - **对象存储（可选）**: `@vercel/blob`
 - **密码加密**: `bcryptjs`
 - **图片处理**: `sharp`
- - **文档处理**: `libreoffice-convert`, `pdf-lib`, `pdf2pic`, `mammoth`
- - **跨域**: `cors`
+- **文档处理**: `libreoffice-convert`, `pdf-lib`, `pdf2pic`, `mammoth`
+- **跨域**: `cors`
 
 ### 开发与部署
+
 - **并发任务**: `concurrently`
 - **热重载**: `nodemon`
 - **代码规范**: `ESLint`
@@ -70,21 +76,27 @@
 ## 🚀 快速开始
 
 如果你想本地部署，请：
+
 ### 环境要求
-- Node.js ≥ 18.0.0（Vite 6 要求）
-- npm ≥ 8.0.0
+
+- Node.js 22.18+（22.x）、24.11+（24.x）或 26+
+- Vite+ CLI：`vp`（可通过 [官方安装指南](https://viteplus.dev/guide/) 安装）
+- 依赖安装统一使用 `vp install`；当前项目声明 npm 11.19.0，由 vp 管理
 - MongoDB (本地或云端)
 
 ### 安装与启动
+
 1.  **克隆项目**
+
     ```powershell
     git clone https://github.com/Vorest0628/my-website.git
     cd my-website
     ```
 
 2.  **一键安装所有依赖**
+
     ```powershell
-    npm run install:all
+    vp run install:all
     ```
 
 3.  **配置环境变量**
@@ -94,9 +106,26 @@
 
 4.  **启动开发环境**
     ```powershell
-    npm run dev
+    vp run dev
     ```
     项目将在本地启动，前端访问 `http://localhost:5173`，后端API服务在 `http://localhost:3000`。
+
+### Vite+ 常用命令
+
+在仓库根目录执行：
+
+```bash
+vp run dev               # 同时启动前端和后端
+vp run frontend:dev      # 仅启动前端，默认端口 5173
+vp run frontend:build    # 构建前端，输出 frontend/dist
+vp run frontend:preview  # 预览构建产物
+vp test --run            # 运行 Markdown 数学公式与表格回归测试
+vp check                 # 格式、lint 和类型检查
+```
+
+也可以进入 `frontend` 目录执行 `vp dev`、`vp build`、`vp preview` 和 `vp test --run`。根目录的 `dev` 脚本负责并发启动两个服务，需要用 `vp run dev` 执行；根目录的 `vp dev` 是内置 Vite 服务器，不会执行这个脚本。
+
+前端保留 `vp run lint` 的 Vue ESLint 检查，以及 `vp run test:markdown`、`vp run test:lcp` 的独立验证入口。性能测试需要可用的 Chrome / Chromium。
 
 ## 📁 项目结构
 
@@ -110,7 +139,7 @@ my-website/
 │   ├── 📂 utils/          # 工具函数
 │   ├── ⚙️ app.js           # 应用入口
 │   └── 🔧 setting.env     # 环境变量
-├── 📂 frontend/           # 前端 (Vue 3 + Vite)
+├── 📂 frontend/           # 前端 (Vue 3 + Vite+)
 │   ├── 📂 src/
 │   │   ├── 📂 api/        # API 请求模块
 │   │   ├── 📂 assets/     # 静态资源 (CSS, 图片)
@@ -168,12 +197,12 @@ curl -i https://你的域名/rss.xml
 如果你想基于本项目搭建自己的站点，可以参考如下配置：
 
 1.  **前端部署**
-    - 在 `frontend` 目录执行 `npm run build`，产物输出到 `frontend/dist`。
+    - 在 `frontend` 目录执行 `vp build`，产物输出到 `frontend/dist`。
     - 将 `frontend/dist` 部署到 Nginx 静态目录，或由你现有的 Web 服务器托管。
 
 2.  **后端部署**
     - 在 `backend` 目录配置生产环境变量（`MONGODB_URI`, `JWT_SECRET`, `PORT` 等）。
-    - 使用 `npm start`、`pm2` 或 `systemd` 运行 Node 服务。
+    - 使用 `vp run start`、`pm2` 或 `systemd` 运行 Node 服务。
     - 建议通过 Nginx 将 `/api` 反向代理到后端端口，这样前端可直接同源访问 API，无需额外代理服务。
 
 3.  **CORS 配置**
