@@ -268,7 +268,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { documentApi } from '@/api/document'
 import { useDocumentPreview } from '@/composables/useDocumentPreview'
@@ -296,6 +296,12 @@ const getDocuments = async () => {
   error.value = ''
 
   try {
+    await getCategories()
+    if (!allCategories.value.includes(selectedCategory.value)) {
+      selectedCategory.value = '全部'
+      selectedSecondaryTag.value = '全部'
+    }
+
     const response = await documentApi.getDocuments({
       page: 1,
       pageSize: 100,
@@ -308,7 +314,9 @@ const getDocuments = async () => {
 
     const payload = response.data
     allDocuments.value = Array.isArray(payload) ? payload : (payload?.documents || [])
-    await getCategories()
+    if (!secondaryTags.value.includes(selectedSecondaryTag.value)) {
+      selectedSecondaryTag.value = '全部'
+    }
   } catch (err) {
     console.error('Failed to fetch documents:', err)
     error.value = err?.message || '获取文档失败，请稍后重试'
@@ -497,14 +505,19 @@ const handleMessage = (event) => {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   if (typeof route.query.search === 'string') {
     searchQuery.value = route.query.search
   }
 
-  await getCategories()
-  await getDocuments()
   window.addEventListener('message', handleMessage)
+})
+
+// KeepAlive retains this page when visiting the admin panel. Reload on every return.
+onActivated(getDocuments)
+
+onDeactivated(() => {
+  if (showPreview.value) closePreview()
 })
 
 watch(
