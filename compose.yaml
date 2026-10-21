@@ -19,7 +19,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       MONGODB_URI: mongodb://mongo:27017/vorest
-      JWT_SECRET: ${DOCKER_JWT_SECRET:?请在 .env.docker 中设置 DOCKER_JWT_SECRET}
+      JWT_SECRET: ${DOCKER_JWT_SECRET:-${JWT_SECRET:?请在根目录 .env 中设置 JWT_SECRET，或通过 --env-file 指定包含密钥的文件}}
       JWT_EXPIRES_IN: 7d
       STORAGE_DRIVER: local
       SITE_URL: ${DOCKER_SITE_URL:-http://localhost:8080}

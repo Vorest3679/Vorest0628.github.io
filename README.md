@@ -129,6 +129,20 @@ vp check                 # 格式、lint 和类型检查
 
 ## Docker 启动
 
+如果根目录 `.env` 已配置 `JWT_SECRET`，可直接运行：
+
+```bash
+docker compose up -d --build
+```
+
+如果密钥配置在 `backend/.env`，请显式指定该文件（`backend/setting.env` 同理）：
+
+```bash
+docker compose --env-file backend/.env up -d --build
+```
+
+Compose 不会自动读取后端目录的环境文件。`JWT_SECRET` 和 `DOCKER_JWT_SECRET` 均受支持，后者优先；使用 `--env-file` 后，Compose 从指定文件读取变量，而不是默认的根目录 `.env`。
+
 安装 Docker Engine / Docker Desktop 和 Docker Compose v2+ 后，在仓库根目录执行：
 
 ```bash
@@ -144,7 +158,7 @@ docker compose --env-file .env.docker up -d --build
 
 前端由 Nginx 托管，统一代理 `/api/`、`/uploads/` 和 `/rss.xml`，并支持 Vue 路由刷新。后端包含 LibreOffice、GraphicsMagick、Ghostscript 和中文字体，支持现有文档转换功能。构建阶段通过 vp 安装锁定依赖并构建前端，运行阶段只保留静态服务器或 Node.js 和生产依赖。
 
-Docker 使用独立的 `.env.docker` 配置；本机 `backend/setting.env`、`.env`、前端环境文件和上传文件不会打包进镜像。默认仅暴露 Web 端口，MongoDB 和后端通过容器网络访问。更换访问端口时设置 `DOCKER_HTTP_PORT`，并同步修改 `DOCKER_SITE_URL`（也用于 CORS 和 RSS 链接）；绑定域名时将其设置为浏览器实际访问的源站地址。
+Docker 可使用独立的 `.env.docker` 配置，也可使用已有环境文件；这些文件和本地上传文件不会打包进镜像。Compose 仅将配置中声明的环境变量注入容器，数据库默认仍为容器中的 MongoDB。默认仅暴露 Web 端口，MongoDB 和后端通过容器网络访问。更换访问端口时设置 `DOCKER_HTTP_PORT`，并同步修改 `DOCKER_SITE_URL`（也用于 CORS 和 RSS 链接）；绑定域名时将其设置为浏览器实际访问的源站地址。
 
 常用管理命令：
 
