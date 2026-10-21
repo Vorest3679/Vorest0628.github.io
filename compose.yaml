@@ -18,12 +18,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      MONGODB_URI: mongodb://mongo:27017/vorest
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-${MONGODB_URI:-mongodb://mongo:27017/vorest}}
       JWT_SECRET: ${DOCKER_JWT_SECRET:-${JWT_SECRET:?请在根目录 .env 中设置 JWT_SECRET，或通过 --env-file 指定包含密钥的文件}}
       JWT_EXPIRES_IN: 7d
       STORAGE_DRIVER: local
-      SITE_URL: ${DOCKER_SITE_URL:-http://localhost:8080}
-      CORS_ORIGIN: ${DOCKER_SITE_URL:-http://localhost:8080}
+      SITE_URL: ${DOCKER_SITE_URL:-${SITE_URL:-http://localhost:8080}}
+      CORS_ORIGIN: ${DOCKER_CORS_ORIGIN:-${DOCKER_SITE_URL:-${CORS_ORIGIN:-${SITE_URL:-http://localhost:8080}}}}
     volumes:
       - uploads:/app/uploads
     depends_on:

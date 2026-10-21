@@ -152,13 +152,15 @@ openssl rand -hex 32
 docker compose --env-file .env.docker up -d --build
 ```
 
-启动后访问 `http://localhost:8080`。Compose 会构建前端和后端镜像，并启动独立的 MongoDB；无需本机安装 Node.js、vp 或 MongoDB。首次启动使用空数据库，不会读取本机已有的数据库或创建默认管理员。
+启动后访问 `http://localhost:8080`。Compose 会构建前端和后端镜像，并启动独立的 MongoDB；无需本机安装 Node.js、vp 或 MongoDB。已配置 `MONGODB_URI` 时，后端沿用该数据库；未配置时使用容器内的空数据库。不会创建默认管理员。
 
 默认使用 MongoDB 7.0，兼容项目现有 Mongoose 8。MongoDB 8.x 在部分新版 Docker Desktop 的 Linux 内核上存在[官方已知的启动兼容问题](https://www.mongodb.com/docs/v8.0/release-notes/8.0/)，因此这里采用 7.0。
 
 前端由 Nginx 托管，统一代理 `/api/`、`/uploads/` 和 `/rss.xml`，并支持 Vue 路由刷新。后端包含 LibreOffice、GraphicsMagick、Ghostscript 和中文字体，支持现有文档转换功能。构建阶段通过 vp 安装锁定依赖并构建前端，运行阶段只保留静态服务器或 Node.js 和生产依赖。
 
-Docker 可使用独立的 `.env.docker` 配置，也可使用已有环境文件；这些文件和本地上传文件不会打包进镜像。Compose 仅将配置中声明的环境变量注入容器，数据库默认仍为容器中的 MongoDB。默认仅暴露 Web 端口，MongoDB 和后端通过容器网络访问。更换访问端口时设置 `DOCKER_HTTP_PORT`，并同步修改 `DOCKER_SITE_URL`（也用于 CORS 和 RSS 链接）；绑定域名时将其设置为浏览器实际访问的源站地址。
+Docker 可使用独立的 `.env.docker` 配置，也可使用已有环境文件；这些文件和本地上传文件不会打包进镜像。Compose 仅将配置中声明的环境变量注入容器，支持已有的 `JWT_SECRET`、`MONGODB_URI`、`CORS_ORIGIN` 和 `SITE_URL`。`DOCKER_MONGODB_URI`、`DOCKER_SITE_URL`、`DOCKER_CORS_ORIGIN` 可分别覆盖数据库、站点地址和允许的来源；显式设置 `DOCKER_SITE_URL` 时，也会作为默认允许来源。默认仅暴露 Web 端口，MongoDB 和后端通过容器网络访问。更换访问端口时设置 `DOCKER_HTTP_PORT`，并同步修改 `DOCKER_SITE_URL`（也用于 CORS 和 RSS 链接）；绑定域名时将其设置为浏览器实际访问的源站地址。
+
+如果页面能打开但接口失败，先确认 `CORS_ORIGIN` 或 `DOCKER_SITE_URL` 与浏览器访问地址一致（包括协议和端口），再检查后端日志。若接口成功但列表为空，请确认 `MONGODB_URI` 指向原有数据库。环境变量修改后执行 `docker compose up -d` 即可重建配置发生变化的容器；使用独立环境文件时，命令中保留对应的 `--env-file`。
 
 常用管理命令：
 
