@@ -127,6 +127,36 @@ vp check                 # 格式、lint 和类型检查
 
 前端保留 `vp run lint` 的 Vue ESLint 检查，以及 `vp run test:markdown`、`vp run test:lcp` 的独立验证入口。性能测试需要可用的 Chrome / Chromium。
 
+## Docker 启动
+
+安装 Docker Engine / Docker Desktop 和 Docker Compose v2+ 后，在仓库根目录执行：
+
+```bash
+cp .env.docker.example .env.docker
+openssl rand -hex 32
+# 将生成的密钥填入 .env.docker 的 DOCKER_JWT_SECRET
+docker compose --env-file .env.docker up -d --build
+```
+
+启动后访问 `http://localhost:8080`。Compose 会构建前端和后端镜像，并启动独立的 MongoDB；无需本机安装 Node.js、vp 或 MongoDB。首次启动使用空数据库，不会读取本机已有的数据库或创建默认管理员。
+
+默认使用 MongoDB 7.0，兼容项目现有 Mongoose 8。MongoDB 8.x 在部分新版 Docker Desktop 的 Linux 内核上存在[官方已知的启动兼容问题](https://www.mongodb.com/docs/v8.0/release-notes/8.0/)，因此这里采用 7.0。
+
+前端由 Nginx 托管，统一代理 `/api/`、`/uploads/` 和 `/rss.xml`，并支持 Vue 路由刷新。后端包含 LibreOffice、GraphicsMagick、Ghostscript 和中文字体，支持现有文档转换功能。构建阶段通过 vp 安装锁定依赖并构建前端，运行阶段只保留静态服务器或 Node.js 和生产依赖。
+
+Docker 使用独立的 `.env.docker` 配置；本机 `backend/setting.env`、`.env`、前端环境文件和上传文件不会打包进镜像。默认仅暴露 Web 端口，MongoDB 和后端通过容器网络访问。更换访问端口时设置 `DOCKER_HTTP_PORT`，并同步修改 `DOCKER_SITE_URL`（也用于 CORS 和 RSS 链接）；绑定域名时将其设置为浏览器实际访问的源站地址。
+
+常用管理命令：
+
+```bash
+docker compose --env-file .env.docker ps
+docker compose --env-file .env.docker logs -f
+docker compose --env-file .env.docker up -d --build  # 更新代码后重新构建
+docker compose --env-file .env.docker down          # 停止服务，保留数据
+```
+
+数据库和上传文件分别保存在 `mongo_data`、`uploads` 命名卷中，重建容器不会丢失。`down -v` 会删除这两个数据卷，仅在需要清空数据时使用。已有站点迁移时，需要另外导入 MongoDB 数据和上传文件。
+
 ## 📁 项目结构
 
 ```

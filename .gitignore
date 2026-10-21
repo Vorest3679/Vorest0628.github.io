@@ -6,6 +6,7 @@ frontend/setting.env
 *.env.development
 *.env.production
 .env.test
+.env.docker
 
 # 依赖目录
 node_modules/
