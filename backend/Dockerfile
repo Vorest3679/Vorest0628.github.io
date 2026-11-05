@@ -8,8 +8,10 @@ RUN vp install --frozen-lockfile --prod \
     && cp "$(vp env which node | head -1)" /tmp/node
 
 FROM debian:bookworm-slim AS runtime
+# libatomic1/libstdc++6：Node 二进制从 vite-plus 构建镜像复制而来，bookworm-slim 默认不带这些运行库
 RUN apt-get -o Acquire::Retries=3 update \
-    && apt-get -o Acquire::Retries=3 install -y --no-install-recommends ca-certificates \
+    && apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
+      ca-certificates libatomic1 libstdc++6 \
     && sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources
 RUN apt-get -o Acquire::Retries=3 update \
     && apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
@@ -21,6 +23,8 @@ RUN apt-get -o Acquire::Retries=3 update \
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000
 COPY --from=dependencies /tmp/node /usr/local/bin/node
+# 构建期就验证 Node 的运行库齐全，避免等到容器启动（或 healthcheck）才发现缺 .so
+RUN node -v
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --chown=app:app backend/ ./
 RUN mkdir -p uploads && chown app:app uploads
