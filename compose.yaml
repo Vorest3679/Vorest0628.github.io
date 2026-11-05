@@ -25,7 +25,9 @@ services:
       SITE_URL: ${DOCKER_SITE_URL:-${SITE_URL:-http://localhost:8080}}
       CORS_ORIGIN: ${DOCKER_CORS_ORIGIN:-${DOCKER_SITE_URL:-${CORS_ORIGIN:-${SITE_URL:-http://localhost:8080}}}}
     volumes:
-      - uploads:/app/uploads
+      # 宿主机 backend/uploads 是上传文件的唯一来源：容器内 /app/uploads 直接映射到这里，
+      # 备份、迁移和排查都以该目录为准。目录需对容器用户（uid 1000）可写，见 README。
+      - ./backend/uploads:/app/uploads
     depends_on:
       mongo:
         condition: service_healthy
@@ -45,4 +47,3 @@ services:
 
 volumes:
   mongo_data:
-  uploads:

@@ -35,8 +35,8 @@ backend/logs/
 frontend/logs/
 
 # ================================
-# 上传文件
-backend/uploads/
+# 上传文件（保留目录本身，供 Docker 绑定挂载 ./backend/uploads)
+backend/uploads/*
 !backend/uploads/.gitkeep
 frontend/public/uploads/
 !frontend/public/uploads/.gitkeep
