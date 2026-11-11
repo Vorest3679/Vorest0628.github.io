@@ -24,6 +24,12 @@ services:
       STORAGE_DRIVER: local
       SITE_URL: ${DOCKER_SITE_URL:-${SITE_URL:-http://localhost:8080}}
       CORS_ORIGIN: ${DOCKER_CORS_ORIGIN:-${DOCKER_SITE_URL:-${CORS_ORIGIN:-${SITE_URL:-http://localhost:8080}}}}
+    # 兼容已有的 backend/.env：文件里的变量会注入容器（如 DEEPSEEK_API_KEY）。
+    # environment 优先级更高，所以 CORS_ORIGIN、SITE_URL、MONGODB_URI 等仍以 Compose 为准。
+    # required: false 需要 Docker Compose v2.24+；文件不存在时自动跳过。
+    env_file:
+      - path: ./backend/.env
+        required: false
     volumes:
       # 宿主机 backend/uploads 是上传文件的唯一来源：容器内 /app/uploads 直接映射到这里，
       # 备份、迁移和排查都以该目录为准。目录需对容器用户（uid 1000）可写，见 README。
